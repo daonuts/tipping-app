@@ -1,2 +1,2 @@
-# subscribe
-An Aragon app for subscribing
+# tip
+An Aragon app for tipping direct or as a reward for content

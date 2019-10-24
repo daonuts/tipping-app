@@ -19,7 +19,7 @@ import "@aragon/os/contracts/apm/APMNamehash.sol";
 import "@aragon/apps-token-manager/contracts/TokenManager.sol";
 import "@aragon/apps-shared-minime/contracts/MiniMeToken.sol";
 
-import "./Subscribe.sol";
+import "./Tip.sol";
 
 
 contract TemplateBase is APMNamehash {
@@ -67,29 +67,25 @@ contract Template is TemplateBase {
         acl.createPermission(this, dao, dao.APP_MANAGER_ROLE(), this);
 
         address root = msg.sender;
-        bytes32 subscribeAppId = keccak256(abi.encodePacked(apmNamehash("open"), keccak256("subscribe-app")));
+        bytes32 tipAppId = keccak256(abi.encodePacked(apmNamehash("open"), keccak256("tip-app")));
         bytes32 tokenManagerAppId = apmNamehash("token-manager");
 
-        Subscribe subscribe = Subscribe(dao.newAppInstance(subscribeAppId, latestVersionAppBase(subscribeAppId)));
+        Tip tip = Tip(dao.newAppInstance(tipAppId, latestVersionAppBase(tipAppId)));
         TokenManager tokenManager = TokenManager(dao.newAppInstance(tokenManagerAppId, latestVersionAppBase(tokenManagerAppId)));
 
-        MiniMeToken token = tokenFactory.createCloneToken(MiniMeToken(0), 0, "Donut", 18, "DONUT", true);
+        MiniMeToken token = tokenFactory.createCloneToken(MiniMeToken(0), 0, "Currency", 18, "CURRENCY", true);
         token.changeController(tokenManager);
 
         // Initialize apps
         tokenManager.initialize(token, true, 0);
         emit InstalledApp(tokenManager, tokenManagerAppId);
-        subscribe.initialize(tokenManager, 1 * TOKEN_UNIT, 30 days);
-        emit InstalledApp(subscribe, subscribeAppId);
+        tip.initialize(token);
+        emit InstalledApp(tip, tipAppId);
 
-        acl.createPermission(root, subscribe, subscribe.SET_PRICE_ROLE(), root);
-        acl.createPermission(root, subscribe, subscribe.SET_DURATION_ROLE(), root);
-        /* acl.createPermission(ANY_ENTITY, subscribe, subscribe.SUBSCRIBE_ROLE(), root); */
-
-        acl.createPermission(subscribe, tokenManager, tokenManager.BURN_ROLE(), root);
+        acl.createPermission(root, tip, tip.NONE(), root);
         acl.createPermission(this, tokenManager, tokenManager.MINT_ROLE(), this);
 
-        tokenManager.mint(root, 1000e18); // Give 1000 token to msg.sender
+        tokenManager.mint(root, 1000*TOKEN_UNIT); // Give 1000 token to msg.sender
 
         // Clean up permissions
         acl.grantPermission(root, dao, dao.APP_MANAGER_ROLE());

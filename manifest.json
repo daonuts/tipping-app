@@ -1,7 +1,7 @@
 {
-  "name": "Subscribe",
+  "name": "Tip",
   "author": "Carl Larson",
-  "description": "Subscribe",
+  "description": "Tipping app",
   "details_url": "/meta/details.md",
   "source_url": "https://<placeholder-repository-url>",
   "icons": [{

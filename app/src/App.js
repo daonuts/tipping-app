@@ -5,76 +5,152 @@ import {
   Info, Main, Modal, SidePanel, Text, TextInput, theme
 } from '@aragon/ui'
 import BigNumber from 'bignumber.js'
+import bases from 'bases'
+import { getPublicAddress as getPublicAddressTorus } from './torusUtils'
+
+const types = ["NONE", "COMMENT", "POST"]
 
 function App() {
   const { api, network, appState, connectedAccount } = useAragonApi()
-  const { price, duration, subscriptions = [], syncing } = appState
+  const { count, tips = [], syncing } = appState
 
-  const [ admin, setAdmin ] = useState(false)
-  const [ units, setUnits ] = useState(2)
-  const [ newPrice, setNewPrice ] = useState(0)
-  const [ newDuration, setNewDuration ] = useState(0)
-  const [ recipient, setRecipient ] = useState(0)
-  const [ accountSubscription, setAccountSubscription ] = useState()
+  const [username, setUsername] = useState('')
+  useEffect(()=>{
+  }, [connectedAccount])
 
+  const [proxy, setProxy] = useState('https://cors-anywhere.herokuapp.com/')
+  const [recipient, setRecipient] = useState('')
+  const [cid, setCid] = useState('')
+  const [ctype, setCtype] = useState(0)
+  const [owner, setOwner] = useState('')
+  const [url, setUrl] = useState('')
+  const [amount, setAmount] = useState(0)
 
   useEffect(()=>{
-    connectedAccount && !recipient && setRecipient(connectedAccount)
-    price && !newPrice && setNewPrice(price)
-    duration && !newDuration && setNewDuration(duration)
-  }, [connectedAccount, price, duration])
+    if(!url) {
+      setCid('')
+      setCtype(0)
+      setRecipient('')
+      return
+    }
 
-  const [ subscription, setSubscription ] = useState()
-  useEffect(()=>{
-    // console.log(subscriptions)
-    // let mysubs = subscriptions.filter(({subscriber})=>subscriber===connectedAccount)
-    // console.log(mysubs)
-    // let end = mysubs.reduce((p,c)=>{
-    //   const start = c.start > p ? c.start : p
-    //   return start + c.duration
-    // }, 0)
-    // console.log(end)
-    // setEnding(end);
-    let sub = subscriptions.find(({subscriber})=>subscriber===connectedAccount)
-    setSubscription(sub)
-  }, [subscriptions])
+    let cid='', ctype=0, tnum=0;
+
+    try {
+      let parts = (new URL(url)).pathname.split("/").filter(a=>(!!a))
+      if(parts.length === 6) {
+        ctype = 1         // comment
+        cid = parts[5]
+        tnum = 1
+      } else if(parts.length === 5) {
+        ctype = 2         // post
+        cid = parts[3]
+        tnum = 3
+      }
+    } catch(e) {}
+
+    console.log(url)
+
+    setCid(cid)
+    setCtype(ctype)
+    setRecipient('')
+
+    async function setRecipientFromContent(tnum, cid) {
+      let content = await fetch(`${proxy}https://www.reddit.com/api/info.json?id=t${tnum}_${cid}`).then(r=>r.json())
+      let recipient = content.data.children[0].data.author
+      setRecipient(recipient)
+    }
+
+    if(ctype){
+      setRecipientFromContent(tnum, cid)
+    }
+  }, [url, proxy])
 
   return (
     <Main>
-      <Header primary="Special Membership" secondary={<Button label="Admin" onClick={()=>{setAdmin(true)}} />} />
-      {subscription && isFuture(subscription.expiration) ? <Text>{`Special Membership active and expiring ${subscription.expiration}`}</Text> : <Text>No active Special Membership subscription</Text>}
-      <Field label="Number of subscription units:">
-        <input type="number" value={units} onChange={(e)=>setUnits(e.target.value)} />
+      <Header primary="Tip" />
+      <Text size="xxlarge">Tip direct:</Text>
+      <Text size="large">recipient will be notified by direct message.</Text>
+      <Field label="Recipient:">
+        <TextInput placeholder="username" value={recipient} onChange={(e)=>setRecipient(e.target.value)} />
       </Field>
-      <Field label="Subscriber:">
-        <input value={recipient} onChange={(e)=>setRecipient(e.target.value)} /> {recipient === connectedAccount && <span>(yourself)</span>}
+      <Text size="xxlarge">Tip for content:</Text>
+      <Text size="large">recipient will be notified by comment reply.</Text>
+      <Field label="Content Url:">
+        <TextInput placeholder="https://www.reddit.com/full_path_to_comment_or_post" value={url} onChange={(e)=>setUrl(e.target.value)} />
       </Field>
-      <Text>{`Subscribe to Special Membership for ${units*duration/(24*60*60)} days by burning ${BigNumber(units*price).div("1e+18")} tokens`}</Text>
-      <Field>
-        <Button mode="positive" label="Subscribe" onClick={()=>api.subscribe(recipient, units).toPromise()} />
+      <Field label="Amount:">
+        <TextInput type="number" value={amount} onChange={(e)=>setAmount(e.target.value)} />
       </Field>
-      <SidePanel title="Menu" opened={admin} onClose={()=>setAdmin(false)}>
-        <Field label="Set subscription price:">
-          <input type="number" value={newPrice} onChange={(e)=>setNewPrice(e.target.value)} />
-          <Button mode="strong" label="Set price" onClick={()=>api.setPrice(newPrice).toPromise()} />
-        </Field>
-        <Field label="Set subscription duration:">
-          <input type="number" value={newDuration} onChange={(e)=>setNewDuration(e.target.value)} />
-          <Button mode="strong" label="Set duration" onClick={()=>api.setDuration(newDuration).toPromise()} />
-        </Field>
-      </SidePanel>
+      <Text size="large" color={theme.textTertiary}>This app retrieves the recipient using a proxy to the Reddit api. Check the following reflects your intent. You can also change the proxy below.</Text>
+      <Text size="large">You are tipping {amount} to {recipient} {cid ? `for ${types[ctype]}:${cid}` : ''}</Text>
+
+      <Field label="Amount:">
+        <Button mode="strong" emphasis="positive" onClick={()=>submitTip(api, recipient, amount, ctype, cid)}>Tip</Button>
+      </Field>
+      <hr />
+      <Field label="Proxy:">
+        <TextInput value={proxy} onChange={(e)=>setProxy(e.target.value)} />
+      </Field>
+      <hr />
+      <TipList tips={tips} />
     </Main>
   )
 }
 
-function getTimeRemaining({start,duration}){
-  const now = Math.round(new Date().getTime()/1000)
-  const remaining = start + duration - now
-  return remaining > 0 ? remaining : 0
-}
+async function submitTip(api, recipient, amount, ctype, cid){
+  const cidInt = bases.fromBase36(cid)
 
-function isFuture(time){
-  return time > new Date()
+  let value = web3.toBigNumber(amount).mul("1e+18").toFixed()
+
+  console.log(cid, ctype, value)
+
+  let tokenAddress = await api.call('currency').toPromise()
+
+  console.log(tokenAddress)
+
+  let intentParams = {
+    token: { address: tokenAddress, value,
+      // hard code to prevent metamask gas estimation
+      // max gas cost ~120k when tipping to non-reg user + some extra
+      gas: 150000
+    }
+  }
+
+  const to = await getPublicAddressTorus({verifier:"reddit", verifierId: recipient})
+
+  // api.tip(recipient, value, ctype, cidInt.toString(), intentParams)
+  await api.tip(to, value, ctype, cidInt.toString(), intentParams).toPromise()
 }
 
 export default App
+
+function Welcome({username}) {
+  return (
+    <div>
+      <Text.Block style={{ textAlign: 'center' }} size='large'>welcome, </Text.Block>
+      <Text.Block style={{ textAlign: 'center' }} size='xxlarge'>{username}</Text.Block>
+    </div>
+  )
+}
+
+function Claim({balance, claim}) {
+  return (
+    <Field label="Claim tips:">
+      <Button mode="strong" emphasis="positive" onClick={claim}>Claim</Button>
+      <Info.Action style={{"margin-top": "10px"}}>You have {balance} in tips to claim (you were tipped before registering)</Info.Action>
+    </Field>
+  )
+}
+
+function TipList({tips}) {
+  const listItems = tips.map((tip) => {
+    console.log(tip)
+    return (
+      <li>{`${tip.fromName} TIPPED ${tip.toName} ${web3.toBigNumber(tip.amount).div("1e+18").toFixed()} for ${types[tip.ctype]}:${bases.toBase36(tip.cid)}`}</li>
+    )
+  });
+  return (
+    <ul>{listItems}</ul>
+  );
+}

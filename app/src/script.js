@@ -14,15 +14,13 @@ api.store(
         account = event.returnValues.account
         newState = state
         break
-      case 'Subscribe':
-        console.log(event)
-        const subscription = {
-          subscriber: event.returnValues.subscriber,
-          expiration: new Date(parseInt(event.returnValues.expiration)*1000),
-          purchaser: event.returnValues.purchaser
+      case 'Tip':
+        if(!state.tips.find(t=>t.eventId===event.id)){
+          let newTip = Object.assign(event.returnValues, {eventId:event.id})
+          let tips = state.tips.slice(0)
+          tips.unshift(newTip)
+          return { ...state, tips }
         }
-        newState = { ...state, subscriptions: [subscription].concat(state.subscriptions) }
-        break
       default:
         newState = state
     }
@@ -32,9 +30,7 @@ api.store(
   {
     init: async function(){
       return {
-        subscriptions: [],
-        price: await api.call("price").toPromise(),
-        duration: await api.call("duration").toPromise()
+        tips: []
       }
     }
   }

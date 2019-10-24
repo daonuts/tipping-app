@@ -95,14 +95,14 @@
     "absolutePath": "@aragon/os/contracts/evmscript/executors/BaseEVMScriptExecutor.sol",
     "exportedSymbols": {
       "BaseEVMScriptExecutor": [
-        6769
+        6493
       ]
     },
-    "id": 6770,
+    "id": 6494,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6759,
+        "id": 6483,
         "literals": [
           "solidity",
           "^",
@@ -115,10 +115,10 @@
       {
         "absolutePath": "@aragon/os/contracts/common/Autopetrified.sol",
         "file": "../../common/Autopetrified.sol",
-        "id": 6760,
+        "id": 6484,
         "nodeType": "ImportDirective",
-        "scope": 6770,
-        "sourceUnit": 5298,
+        "scope": 6494,
+        "sourceUnit": 5022,
         "src": "70:40:38",
         "symbolAliases": [],
         "unitAlias": ""
@@ -126,10 +126,10 @@
       {
         "absolutePath": "@aragon/os/contracts/evmscript/IEVMScriptExecutor.sol",
         "file": "../IEVMScriptExecutor.sol",
-        "id": 6761,
+        "id": 6485,
         "nodeType": "ImportDirective",
-        "scope": 6770,
-        "sourceUnit": 6639,
+        "scope": 6494,
+        "sourceUnit": 6363,
         "src": "111:35:38",
         "symbolAliases": [],
         "unitAlias": ""
@@ -140,17 +140,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 6762,
+              "id": 6486,
               "name": "IEVMScriptExecutor",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6638,
+              "referencedDeclaration": 6362,
               "src": "183:18:38",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IEVMScriptExecutor_$6638",
+                "typeIdentifier": "t_contract$_IEVMScriptExecutor_$6362",
                 "typeString": "contract IEVMScriptExecutor"
               }
             },
-            "id": 6763,
+            "id": 6487,
             "nodeType": "InheritanceSpecifier",
             "src": "183:18:38"
           },
@@ -158,49 +158,49 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 6764,
+              "id": 6488,
               "name": "Autopetrified",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5297,
+              "referencedDeclaration": 5021,
               "src": "203:13:38",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Autopetrified_$5297",
+                "typeIdentifier": "t_contract$_Autopetrified_$5021",
                 "typeString": "contract Autopetrified"
               }
             },
-            "id": 6765,
+            "id": 6489,
             "nodeType": "InheritanceSpecifier",
             "src": "203:13:38"
           }
         ],
         "contractDependencies": [
-          5297,
-          5605,
-          5666,
-          5995,
-          6638
+          5021,
+          5329,
+          5390,
+          5719,
+          6362
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 6769,
+        "id": 6493,
         "linearizedBaseContracts": [
-          6769,
-          5297,
-          5666,
-          5605,
-          5995,
-          6638
+          6493,
+          5021,
+          5390,
+          5329,
+          5719,
+          6362
         ],
         "name": "BaseEVMScriptExecutor",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 6768,
+            "id": 6492,
             "name": "SCRIPT_START_LOCATION",
             "nodeType": "VariableDeclaration",
-            "scope": 6769,
+            "scope": 6493,
             "src": "223:51:38",
             "stateVariable": true,
             "storageLocation": "default",
@@ -209,7 +209,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 6766,
+              "id": 6490,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "223:7:38",
@@ -221,7 +221,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "34",
-              "id": 6767,
+              "id": 6491,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -239,7 +239,7 @@
             "visibility": "internal"
           }
         ],
-        "scope": 6770,
+        "scope": 6494,
         "src": "149:128:38"
       }
     ],
@@ -249,14 +249,14 @@
     "absolutePath": "@aragon/os/contracts/evmscript/executors/BaseEVMScriptExecutor.sol",
     "exportedSymbols": {
       "BaseEVMScriptExecutor": [
-        6769
+        6493
       ]
     },
-    "id": 6770,
+    "id": 6494,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6759,
+        "id": 6483,
         "literals": [
           "solidity",
           "^",
@@ -269,10 +269,10 @@
       {
         "absolutePath": "@aragon/os/contracts/common/Autopetrified.sol",
         "file": "../../common/Autopetrified.sol",
-        "id": 6760,
+        "id": 6484,
         "nodeType": "ImportDirective",
-        "scope": 6770,
-        "sourceUnit": 5298,
+        "scope": 6494,
+        "sourceUnit": 5022,
         "src": "70:40:38",
         "symbolAliases": [],
         "unitAlias": ""
@@ -280,10 +280,10 @@
       {
         "absolutePath": "@aragon/os/contracts/evmscript/IEVMScriptExecutor.sol",
         "file": "../IEVMScriptExecutor.sol",
-        "id": 6761,
+        "id": 6485,
         "nodeType": "ImportDirective",
-        "scope": 6770,
-        "sourceUnit": 6639,
+        "scope": 6494,
+        "sourceUnit": 6363,
         "src": "111:35:38",
         "symbolAliases": [],
         "unitAlias": ""
@@ -294,17 +294,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 6762,
+              "id": 6486,
               "name": "IEVMScriptExecutor",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6638,
+              "referencedDeclaration": 6362,
               "src": "183:18:38",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IEVMScriptExecutor_$6638",
+                "typeIdentifier": "t_contract$_IEVMScriptExecutor_$6362",
                 "typeString": "contract IEVMScriptExecutor"
               }
             },
-            "id": 6763,
+            "id": 6487,
             "nodeType": "InheritanceSpecifier",
             "src": "183:18:38"
           },
@@ -312,49 +312,49 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 6764,
+              "id": 6488,
               "name": "Autopetrified",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5297,
+              "referencedDeclaration": 5021,
               "src": "203:13:38",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Autopetrified_$5297",
+                "typeIdentifier": "t_contract$_Autopetrified_$5021",
                 "typeString": "contract Autopetrified"
               }
             },
-            "id": 6765,
+            "id": 6489,
             "nodeType": "InheritanceSpecifier",
             "src": "203:13:38"
           }
         ],
         "contractDependencies": [
-          5297,
-          5605,
-          5666,
-          5995,
-          6638
+          5021,
+          5329,
+          5390,
+          5719,
+          6362
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 6769,
+        "id": 6493,
         "linearizedBaseContracts": [
-          6769,
-          5297,
-          5666,
-          5605,
-          5995,
-          6638
+          6493,
+          5021,
+          5390,
+          5329,
+          5719,
+          6362
         ],
         "name": "BaseEVMScriptExecutor",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 6768,
+            "id": 6492,
             "name": "SCRIPT_START_LOCATION",
             "nodeType": "VariableDeclaration",
-            "scope": 6769,
+            "scope": 6493,
             "src": "223:51:38",
             "stateVariable": true,
             "storageLocation": "default",
@@ -363,7 +363,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 6766,
+              "id": 6490,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "223:7:38",
@@ -375,7 +375,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "34",
-              "id": 6767,
+              "id": 6491,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -393,7 +393,7 @@
             "visibility": "internal"
           }
         ],
-        "scope": 6770,
+        "scope": 6494,
         "src": "149:128:38"
       }
     ],
@@ -405,5 +405,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2019-10-24T13:11:30.361Z"
+  "updatedAt": "2019-10-24T21:47:52.204Z"
 }

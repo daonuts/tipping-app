@@ -1,37 +1,32 @@
 {
   "roles": [
     {
-      "name": "Set subscribe unit price",
-      "id": "SET_PRICE_ROLE",
-      "params": ["Price"]
-    },
-    {
-      "name": "Set subscribe unit duration",
-      "id": "SET_DURATION_ROLE",
-      "params": ["Duration"]
+      "name": "None",
+      "id": "NONE",
+      "params": []
     }
   ],
   "environments": {
     "default": {
       "network": "development",
-      "appName": "subscribe-app.open.aragonpm.eth"
+      "appName": "tip-app.open.aragonpm.eth"
     },
     "docker": {
       "network": "docker",
-      "appName": "subscribe-app.open.aragonpm.eth"
+      "appName": "tip-app.open.aragonpm.eth"
     },
     "rinkeby": {
       "registry": "0x98df287b6c145399aaa709692c8d308357bc085d",
-      "appName": "subscribe-app.open.aragonpm.eth",
+      "appName": "tip-app.open.aragonpm.eth",
       "wsRPC": "wss://rinkeby.eth.aragon.network/ws",
       "network": "rinkeby"
     },
     "mainnet": {
       "registry": "0x314159265dd8dbb310642f98f50c066173c1259b",
-      "appName": "subscribe-app.open.aragonpm.eth",
+      "appName": "tip-app.open.aragonpm.eth",
       "wsRPC": "wss://mainnet.eth.aragon.network/ws",
       "network": "mainnet"
     }
   },
-  "path": "contracts/Subscribe.sol"
+  "path": "contracts/Tip.sol"
 }
