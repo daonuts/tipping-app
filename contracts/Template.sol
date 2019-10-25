@@ -19,7 +19,7 @@ import "@aragon/os/contracts/apm/APMNamehash.sol";
 import "@aragon/apps-token-manager/contracts/TokenManager.sol";
 import "@aragon/apps-shared-minime/contracts/MiniMeToken.sol";
 
-import "./Tip.sol";
+import "./Tipping.sol";
 
 
 contract TemplateBase is APMNamehash {
@@ -67,10 +67,10 @@ contract Template is TemplateBase {
         acl.createPermission(this, dao, dao.APP_MANAGER_ROLE(), this);
 
         address root = msg.sender;
-        bytes32 tipAppId = keccak256(abi.encodePacked(apmNamehash("open"), keccak256("tip-app")));
+        bytes32 tippingAppId = keccak256(abi.encodePacked(apmNamehash("open"), keccak256("tipping-app")));
         bytes32 tokenManagerAppId = apmNamehash("token-manager");
 
-        Tip tip = Tip(dao.newAppInstance(tipAppId, latestVersionAppBase(tipAppId)));
+        Tipping tipping = Tipping(dao.newAppInstance(tippingAppId, latestVersionAppBase(tippingAppId)));
         TokenManager tokenManager = TokenManager(dao.newAppInstance(tokenManagerAppId, latestVersionAppBase(tokenManagerAppId)));
 
         MiniMeToken token = tokenFactory.createCloneToken(MiniMeToken(0), 0, "Currency", 18, "CURRENCY", true);
@@ -79,10 +79,10 @@ contract Template is TemplateBase {
         // Initialize apps
         tokenManager.initialize(token, true, 0);
         emit InstalledApp(tokenManager, tokenManagerAppId);
-        tip.initialize(token);
-        emit InstalledApp(tip, tipAppId);
+        tipping.initialize(token);
+        emit InstalledApp(tipping, tippingAppId);
 
-        acl.createPermission(root, tip, tip.NONE(), root);
+        acl.createPermission(root, tipping, tipping.NONE(), root);
         acl.createPermission(this, tokenManager, tokenManager.MINT_ROLE(), this);
 
         tokenManager.mint(root, 1000*TOKEN_UNIT); // Give 1000 token to msg.sender

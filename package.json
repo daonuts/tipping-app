@@ -1,5 +1,5 @@
 {
-	"name": "@daonuts/tip-app",
+	"name": "@daonuts/tipping",
 	"version": "0.0.1",
 	"description": "",
 	"dependencies": {
@@ -47,8 +47,20 @@
 		"publish:major": "aragon apm publish major --files dist --skip-confirmation",
 		"deploy:template": "aragon deploy Template --init @ARAGON_ENS",
 		"versions": "aragon apm versions",
-		"clean": "rm -rf build && rm -rf dist"
+		"clean": "rm -rf build && rm -rf dist",
+		"abi:extract": "truffle-extract --output abi/ --keys abi",
+    "prepublishOnly": "truffle compile --all && npm run abi:extract -- --no-compile"
 	},
+	"keywords": [],
+	"files": [
+		"/abi",
+		"/arapp.json",
+		"/build",
+		"/contracts",
+		"/test"
+	],
+	"author": "Carl Larson <cslarson@gmail.com>",
+	"license": "(GPL-3.0-or-later OR AGPL-3.0-or-later)",
 	"browserslist": [
 		"last 2 Chrome versions"
 	]

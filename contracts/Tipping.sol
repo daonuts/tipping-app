@@ -5,7 +5,7 @@ import "@aragon/os/contracts/apps/AragonApp.sol";
 import "@aragon/apps-shared-minime/contracts/MiniMeToken.sol";
 import "@aragon/apps-token-manager/contracts/TokenManager.sol";
 
-contract Tip is AragonApp {
+contract Tipping is AragonApp {
     enum ContentType                                       { NONE, COMMENT, POST }
 
     MiniMeToken public currency;

@@ -1,7 +1,7 @@
 {
-  "name": "Tip",
+  "name": "Tipping",
   "author": "Carl Larson",
-  "description": "Tipping app",
+  "description": "Tip direct or as content reward",
   "details_url": "/meta/details.md",
   "source_url": "https://<placeholder-repository-url>",
   "icons": [{
