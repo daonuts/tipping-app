@@ -2,13 +2,12 @@ pragma solidity ^0.4.24;
 
 import "@aragon/os/contracts/apps/AragonApp.sol";
 
-import "@aragon/apps-shared-minime/contracts/MiniMeToken.sol";
-import "@aragon/apps-token-manager/contracts/TokenManager.sol";
+import "@daonuts/token/contracts/Token.sol";
 
 contract Tipping is AragonApp {
     enum ContentType                                       { NONE, COMMENT, POST }
 
-    MiniMeToken public currency;
+    Token public currency;
 
     /// ACL
     bytes32 constant public NONE = keccak256("NONE");
@@ -18,7 +17,7 @@ contract Tipping is AragonApp {
     function initialize(address _currency) onlyInit public {
         initialized();
 
-        currency = MiniMeToken(_currency);
+        currency = Token(_currency);
     }
 
     function tip(address _to, uint _amount, ContentType _ctype, uint40 _cid) external {
