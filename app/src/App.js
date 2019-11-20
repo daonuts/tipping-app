@@ -7,6 +7,8 @@ import {
 import BigNumber from 'bignumber.js'
 import bases from 'bases'
 import { getPublicAddress as getPublicAddressTorus } from './torusUtils'
+import {abi as TokenABI} from '../../abi/Token.json'
+import { ethers } from 'ethers'
 
 const types = ["NONE", "COMMENT", "POST"]
 
@@ -20,8 +22,8 @@ function App() {
 
   const [proxy, setProxy] = useState('https://cors-anywhere.herokuapp.com/')
   const [recipient, setRecipient] = useState('')
-  const [cid, setCid] = useState('')
-  const [ctype, setCtype] = useState(0)
+  const [contentId, setCid] = useState('')
+  // const [ctype, setCtype] = useState(0)
   const [owner, setOwner] = useState('')
   const [url, setUrl] = useState('')
   const [amount, setAmount] = useState(0)
@@ -29,40 +31,38 @@ function App() {
   useEffect(()=>{
     if(!url) {
       setCid('')
-      setCtype(0)
+      // setCtype(0)
       setRecipient('')
       return
     }
 
-    let cid='', ctype=0, tnum=0;
+    let id='', tnum=0;
 
     try {
       let parts = (new URL(url)).pathname.split("/").filter(a=>(!!a))
       if(parts.length === 6) {
-        ctype = 1         // comment
-        cid = parts[5]
+        id = parts[5]
         tnum = 1
       } else if(parts.length === 5) {
-        ctype = 2         // post
-        cid = parts[3]
+        id = parts[3]
         tnum = 3
       }
     } catch(e) {}
 
     console.log(url)
 
-    setCid(cid)
-    setCtype(ctype)
+    setCid(`t${tnum}_${id}`)
+    // setCtype(ctype)
     setRecipient('')
 
-    async function setRecipientFromContent(tnum, cid) {
-      let content = await fetch(`${proxy}https://www.reddit.com/api/info.json?id=t${tnum}_${cid}`).then(r=>r.json())
+    async function setRecipientFromContent(tnum, id) {
+      let content = await fetch(`${proxy}https://www.reddit.com/api/info.json?id=t${tnum}_${id}`).then(r=>r.json())
       let recipient = content.data.children[0].data.author
       setRecipient(recipient)
     }
 
-    if(ctype){
-      setRecipientFromContent(tnum, cid)
+    if(tnum){
+      setRecipientFromContent(tnum, id)
     }
   }, [url, proxy])
 
@@ -83,10 +83,10 @@ function App() {
         <TextInput type="number" value={amount} onChange={(e)=>setAmount(e.target.value)} />
       </Field>
       <Text size="large" color={theme.textTertiary}>This app retrieves the recipient using a proxy to the Reddit api. Check the following reflects your intent. You can also change the proxy below.</Text>
-      <Text size="large">You are tipping {amount} to {recipient} {cid ? `for ${types[ctype]}:${cid}` : ''}</Text>
+      <Text size="large">You are tipping {amount} to {recipient} {contentId ? `for ${contentId}` : ''}</Text>
 
       <Field label="Amount:">
-        <Button mode="strong" emphasis="positive" onClick={()=>submitTip(api, recipient, amount, ctype, cid)}>Tip</Button>
+        <Button mode="strong" emphasis="positive" onClick={()=>submitTip(api, recipient, amount, contentId)}>Tip</Button>
       </Field>
       <hr />
       <Field label="Proxy:">
@@ -98,30 +98,65 @@ function App() {
   )
 }
 
-async function submitTip(api, recipient, amount, ctype, cid){
-  const cidInt = bases.fromBase36(cid)
+async function submitTip(api, recipient, amount, contentId){
+  const { utils } = ethers
+  const { formatBytes32String, parseBytes32String, toUtf8Bytes, hexlify, hexZeroPad, bigNumberify } = utils
 
-  let value = web3.toBigNumber(amount).mul("1e+18").toFixed()
+  const decimals = "1000000000000000000"
 
-  console.log(cid, ctype, value)
+  let value = bigNumberify(amount).mul(decimals);     //    web3.toBigNumber(amount).mul("1e+18").toFixed()
+
+  console.log(contentId, value)
 
   let tokenAddress = await api.call('currency').toPromise()
 
-  console.log(tokenAddress)
+  const torusAddress = await getPublicAddressTorus({verifier:"reddit", verifierId: recipient})
 
-  let intentParams = {
-    token: { address: tokenAddress, value,
-      // hard code to prevent metamask gas estimation
-      // max gas cost ~120k when tipping to non-reg user + some extra
-      gas: 150000
-    }
-  }
+  const recipientAddress = hexZeroPad(hexlify(torusAddress),32)
+  contentId = formatBytes32String(contentId) //hexZeroPad(hexlify(toUtf8Bytes("t3_cmjqva")),32)
+  // console.log(hexlify(contentId))
+  const args = "0x" + [
+    hexlify(1),   // 1 = tip
+    recipientAddress,
+    contentId
+  ].map(a=>a.substr(2)).join("")
+  console.log(args)
 
-  const to = await getPublicAddressTorus({verifier:"reddit", verifierId: recipient})
+  const { appAddress } = await api.currentApp().toPromise()
+  console.log(appAddress)
+  const token = api.external(tokenAddress, TokenABI)
+  console.log(token)
 
-  // api.tip(recipient, value, ctype, cidInt.toString(), intentParams)
-  await api.tip(to, value, ctype, cidInt.toString(), intentParams).toPromise()
+  console.log(await api.call("extractTipParameters", args).toPromise())
+  const tx = await token.send(appAddress, value.toString(), args).toPromise()
+  console.log(tx)
+
 }
+
+// async function submitTip(api, recipient, amount, ctype, cid){
+//   const cidInt = bases.fromBase36(cid)
+//
+//   let value = web3.toBigNumber(amount).mul("1e+18").toFixed()
+//
+//   console.log(cid, ctype, value)
+//
+//   let tokenAddress = await api.call('currency').toPromise()
+//
+//   console.log(tokenAddress)
+//
+//   let intentParams = {
+//     token: { address: tokenAddress, value,
+//       // hard code to prevent metamask gas estimation
+//       // max gas cost ~120k when tipping to non-reg user + some extra
+//       gas: 150000
+//     }
+//   }
+//
+//   const to = await getPublicAddressTorus({verifier:"reddit", verifierId: recipient})
+//
+//   // api.tip(recipient, value, ctype, cidInt.toString(), intentParams)
+//   await api.tip(to, value, ctype, cidInt.toString(), intentParams).toPromise()
+// }
 
 export default App
 
@@ -147,7 +182,7 @@ function TipList({tips}) {
   const listItems = tips.map((tip) => {
     console.log(tip)
     return (
-      <li>{`${tip.fromName} TIPPED ${tip.toName} ${web3.toBigNumber(tip.amount).div("1e+18").toFixed()} for ${types[tip.ctype]}:${bases.toBase36(tip.cid)}`}</li>
+      <li>{`${tip.fromName} TIPPED ${tip.toName} ${web3.toBigNumber(tip.amount).div("1e+18").toFixed()} for ${bases.toBase36(tip.contentId)}`}</li>
     )
   });
   return (

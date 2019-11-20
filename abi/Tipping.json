@@ -225,13 +225,8 @@
         },
         {
           "indexed": false,
-          "name": "ctype",
-          "type": "uint8"
-        },
-        {
-          "indexed": false,
-          "name": "cid",
-          "type": "uint40"
+          "name": "contentId",
+          "type": "bytes32"
         }
       ],
       "name": "Tip",
@@ -304,6 +299,14 @@
       "constant": false,
       "inputs": [
         {
+          "name": "_operator",
+          "type": "address"
+        },
+        {
+          "name": "_from",
+          "type": "address"
+        },
+        {
           "name": "_to",
           "type": "address"
         },
@@ -312,18 +315,63 @@
           "type": "uint256"
         },
         {
-          "name": "_ctype",
-          "type": "uint8"
+          "name": "_data",
+          "type": "bytes"
         },
         {
-          "name": "_cid",
-          "type": "uint40"
+          "name": "_operatorData",
+          "type": "bytes"
+        }
+      ],
+      "name": "tokensReceived",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "name": "_amount",
+          "type": "uint256"
+        },
+        {
+          "name": "_contentId",
+          "type": "bytes32"
         }
       ],
       "name": "tip",
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_data",
+          "type": "bytes"
+        }
+      ],
+      "name": "extractTipParameters",
+      "outputs": [
+        {
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "name": "contentId",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
       "type": "function"
     }
   ]
