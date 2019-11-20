@@ -28,9 +28,10 @@ api.store(
     return newState
   },
   {
-    init: async function(){
+    init: async function(cachedState){
       return {
-        tips: []
+        tips: [],
+        ...cachedState
       }
     }
   }
