@@ -2,9 +2,8 @@ pragma solidity ^0.4.24;
 
 import "@aragon/os/contracts/apps/AragonApp.sol";
 
-/* import "@daonuts/token/contracts/Token.sol"; */
-import "../../token/contracts/Token.sol";
-import "../../token/contracts/IERC777Recipient.sol";
+import "@daonuts/token/contracts/Token.sol";
+import "@daonuts/token/contracts/IERC777Recipient.sol";
 
 contract Tipping is AragonApp, IERC777Recipient {
     /* enum ContentType                                       { NONE, COMMENT, POST } */
