@@ -10,9 +10,6 @@ contract Tipping is AragonApp, IERC777Recipient {
 
     Token public currency;
 
-    /// ACL
-    bytes32 constant public NONE = keccak256("NONE");
-
     // Errors
     string private constant ERROR_TOKEN_TRANSFER = "TOKEN_TRANSFER_FAILED";
     string private constant ERROR_INVALID_TOKEN = "INVALID_TOKEN";

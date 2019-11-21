@@ -1,10 +1,5 @@
 {
   "roles": [
-    {
-      "name": "None",
-      "id": "NONE",
-      "params": []
-    }
   ],
   "environments": {
     "default": {
