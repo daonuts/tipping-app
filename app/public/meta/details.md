@@ -1,6 +1,1 @@
-An application for Aragon.
-
-**Features**
-- Feature \#1.
-- Feature \#2.
-- Feature \#3.
+An Aragon app for tipping direct or as a reward for content
