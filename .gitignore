@@ -5,3 +5,5 @@ scratch/
 package-lock.json
 .cache
 yarn.lock
+**/.env*
+bot/db.json

@@ -83,6 +83,7 @@ contract Template is TemplateBase {
         tipping.initialize(token);
         emit InstalledApp(tipping, tippingAppId);
 
+        /* acl.createPermission(root, tipping, tipping.NULL_ROLE(), root); */
         acl.createPermission(0x0, tipping, 0x0, 0x0);
         acl.createPermission(this, tokenManager, tokenManager.MINT_ROLE(), this);
 

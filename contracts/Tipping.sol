@@ -6,15 +6,12 @@ import "@daonuts/token/contracts/Token.sol";
 import "@daonuts/token/contracts/IERC777Recipient.sol";
 
 contract Tipping is AragonApp, IERC777Recipient {
-    /* enum ContentType                                       { NONE, COMMENT, POST } */
-
     Token public currency;
 
     // Errors
     string private constant ERROR_TOKEN_TRANSFER = "TOKEN_TRANSFER_FAILED";
     string private constant ERROR_INVALID_TOKEN = "INVALID_TOKEN";
 
-    /* event Tip(address from, address to, uint amount, ContentType ctype, uint40 contentId); */
     event Tip(address from, address to, uint amount, bytes32 contentId);
 
     function initialize(address _currency) onlyInit public {
