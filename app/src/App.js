@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { useAragonApi } from '@aragon/api-react'
 import {
   AppBar, AppView, Button, Card, CardLayout, Checkbox, Field, GU, Header, IconSettings,
-  Info, Main, Modal, SidePanel, Text, TextInput, theme
+  Info, Paragraph, Main, Modal, SidePanel, Text, TextInput, theme
 } from '@aragon/ui'
 import BigNumber from 'bignumber.js'
-import bases from 'bases'
 import { getPublicAddress as getPublicAddressTorus } from './torusUtils'
 import {abi as TokenABI} from '../../abi/Token.json'
 import { ethers } from 'ethers'
+const { utils } = ethers
 
 const types = ["NONE", "COMMENT", "POST"]
 
@@ -27,6 +27,7 @@ function App() {
   const [owner, setOwner] = useState('')
   const [url, setUrl] = useState('')
   const [amount, setAmount] = useState(0)
+  const [disabled, setDisabled] = useState(true)
 
   useEffect(()=>{
     if(!url) {
@@ -69,24 +70,22 @@ function App() {
   return (
     <Main>
       <Header primary="Tip" />
-      <Text size="xxlarge">Tip direct:</Text>
-      <Text size="large">recipient will be notified by direct message.</Text>
+      <Text size="xxlarge">Tip direct (recipient will be notified by direct message):</Text>
       <Field label="Recipient:">
         <TextInput placeholder="username" value={recipient} onChange={(e)=>setRecipient(e.target.value)} />
       </Field>
-      <Text size="xxlarge">Tip for content:</Text>
-      <Text size="large">recipient will be notified by comment reply.</Text>
+      <Text size="xxlarge">Tip for content (recipient will be notified by comment reply):</Text>
       <Field label="Content Url:">
         <TextInput placeholder="https://www.reddit.com/full_path_to_comment_or_post" value={url} onChange={(e)=>setUrl(e.target.value)} />
       </Field>
       <Field label="Amount:">
         <TextInput type="number" value={amount} onChange={(e)=>setAmount(e.target.value)} />
       </Field>
-      <Text size="large" color={theme.textTertiary}>This app retrieves the recipient using a proxy to the Reddit api. Check the following reflects your intent. You can also change the proxy below.</Text>
-      <Text size="large">You are tipping {amount} to {recipient} {contentId ? `for ${contentId}` : ''}</Text>
-
+      <p><Text size="large" color={theme.textTertiary}>This app retrieves the recipient using a proxy to the Reddit api. Check the following reflects your intent. You can also change the proxy below.</Text></p>
+      <p><Text size="large">You are tipping {amount} to {recipient} {contentId ? `for ${contentId}` : ''}</Text></p>
+      <Info.Alert style={{"marginBottom": "10px"}}>This interface currently looks up and uses the Torus address for the Reddit username (and not the r/ethtrader registered address which is likely what you would expect).<Button mode="strong" onClick={()=>setDisabled(false)}>Enable anyway</Button></Info.Alert>
       <Field label="Amount:">
-        <Button mode="strong" emphasis="positive" onClick={()=>submitTip(api, recipient, amount, contentId)}>Tip</Button>
+        <Button mode="strong" emphasis="positive" disabled={disabled} onClick={()=>submitTip(api, recipient, amount, contentId)}>Tip</Button>
       </Field>
       <hr />
       <Field label="Proxy:">
@@ -133,56 +132,13 @@ async function submitTip(api, recipient, amount, contentId){
 
 }
 
-// async function submitTip(api, recipient, amount, ctype, cid){
-//   const cidInt = bases.fromBase36(cid)
-//
-//   let value = web3.toBigNumber(amount).mul("1e+18").toFixed()
-//
-//   console.log(cid, ctype, value)
-//
-//   let tokenAddress = await api.call('currency').toPromise()
-//
-//   console.log(tokenAddress)
-//
-//   let intentParams = {
-//     token: { address: tokenAddress, value,
-//       // hard code to prevent metamask gas estimation
-//       // max gas cost ~120k when tipping to non-reg user + some extra
-//       gas: 150000
-//     }
-//   }
-//
-//   const to = await getPublicAddressTorus({verifier:"reddit", verifierId: recipient})
-//
-//   // api.tip(recipient, value, ctype, cidInt.toString(), intentParams)
-//   await api.tip(to, value, ctype, cidInt.toString(), intentParams).toPromise()
-// }
-
 export default App
-
-function Welcome({username}) {
-  return (
-    <div>
-      <Text.Block style={{ textAlign: 'center' }} size='large'>welcome, </Text.Block>
-      <Text.Block style={{ textAlign: 'center' }} size='xxlarge'>{username}</Text.Block>
-    </div>
-  )
-}
-
-function Claim({balance, claim}) {
-  return (
-    <Field label="Claim tips:">
-      <Button mode="strong" emphasis="positive" onClick={claim}>Claim</Button>
-      <Info.Action style={{"margin-top": "10px"}}>You have {balance} in tips to claim (you were tipped before registering)</Info.Action>
-    </Field>
-  )
-}
 
 function TipList({tips}) {
   const listItems = tips.map((tip) => {
     console.log(tip)
     return (
-      <li>{`${tip.fromName} TIPPED ${tip.toName} ${web3.toBigNumber(tip.amount).div("1e+18").toFixed()} for ${bases.toBase36(tip.contentId)}`}</li>
+      <li><Text>{`${tip.from} TIPPED  ${tip.to} ${web3.toBigNumber(tip.amount).div("1e+18").toFixed()} for ${utils.parseBytes32String(tip.contentId)}`}</Text></li>
     )
   });
   return (

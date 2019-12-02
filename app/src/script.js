@@ -15,8 +15,9 @@ api.store(
         newState = state
         break
       case 'Tip':
+        console.log(event)
         if(!state.tips.find(t=>t.eventId===event.id)){
-          let newTip = Object.assign(event.returnValues, {eventId:event.id})
+          let newTip = Object.assign(event.returnValues, {eventId:event.id, txHash: event.transactionHash})
           let tips = state.tips.slice(0)
           tips.unshift(newTip)
           return { ...state, tips }
