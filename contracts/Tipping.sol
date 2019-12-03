@@ -3,9 +3,8 @@ pragma solidity ^0.4.24;
 import "@aragon/os/contracts/apps/AragonApp.sol";
 
 import "@daonuts/token/contracts/Token.sol";
-import "@daonuts/token/contracts/IERC777Recipient.sol";
 
-contract Tipping is AragonApp, IERC777Recipient {
+contract Tipping is AragonApp {
     Token public currency;
 
     // Errors
@@ -32,6 +31,8 @@ contract Tipping is AragonApp, IERC777Recipient {
             (tipTo, contentId) = extractTipParameters(_data);
             require( currency.transfer(tipTo, _amount), ERROR_TOKEN_TRANSFER );
             emit Tip(_from, tipTo, _amount, contentId);
+        } else {
+          revert("UNKNOWN_ACTION");
         }
     }
 
