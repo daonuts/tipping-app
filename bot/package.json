@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "run:rinkeby": ". ./.env-rinkeby && node index.js",
-    "run:mainnet": ". ./.env-mainnet && node index.js"
+    "start:rinkeby": ". ./.env-rinkeby && node index.js",
+    "start:mainnet": ". ./.env-mainnet && node index.js"
   },
   "author": "Carl Larson <cslarson@gmail.com>",
   "license": "ISC",
