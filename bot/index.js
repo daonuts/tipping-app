@@ -8,7 +8,7 @@ const low = require('lowdb')
 const { Client } = require('pg')
 const client = new Client({connectionString: process.env.DB_URL})
 const FileAsync = require('lowdb/adapters/FileAsync')
-const TippingABI = require('../build/contracts/Tipping.json').abi
+const TippingABI = require('../abi/Tipping.json').abi
 
 const adapter = new FileAsync('db.json')
 const r = new snoowrap({
@@ -18,7 +18,7 @@ const r = new snoowrap({
   username: process.env.REDDIT_USERNAME,
   password: process.env.REDDIT_PASSWORD
 })
-const web3 = new Web3('wss://rinkeby.infura.io/ws')
+const web3 = new Web3(`wss://${process.env.NETWORK}.infura.io/ws/v3/${process.env.INFURA_PROJECT_ID}`)
 
 const tipping = new web3.eth.Contract(TippingABI, process.env.TIPPING_ADDRESS)
 
@@ -30,7 +30,7 @@ async function main(){
   const db = await low(adapter)
   tips = db.defaults({ tips: [] }).get('tips')
   const startBlock = await tipping.methods.getInitializationBlock().call()
-  console.log(startBlock)
+  console.log("startBlock:", startBlock)
   let events = await eventsAfter(startBlock)
   let newEvents = events.filter(unprocessed)
   await Promise.all(newEvents.map(notify))
