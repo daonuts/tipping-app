@@ -5,8 +5,8 @@ const { formatBytes32String, parseBytes32String, toUtf8Bytes, hexlify, hexZeroPa
 const snoowrap = require('snoowrap')
 const Promise = require('bluebird')
 const low = require('lowdb')
-const { Client } = require('pg')
-const client = new Client({connectionString: process.env.DB_URL})
+const { Pool } = require('pg')
+const pool = new Pool({connectionString: process.env.DB_URL})
 const FileAsync = require('lowdb/adapters/FileAsync')
 const TippingABI = require('../abi/Tipping.json').abi
 
@@ -26,7 +26,6 @@ let tips
 main()
 
 async function main(){
-  await client.connect()
   const db = await low(adapter)
   tips = db.defaults({ tips: [] }).get('tips')
   const startBlock = await tipping.methods.getInitializationBlock().call()
@@ -65,13 +64,15 @@ async function notify({transactionHash, returnValues}){
 }
 
 async function reply(content, {from, amount, transactionHash}){
+  const client = await pool.connect()
   const query = {
     // give the query a unique name
-    name: 'fetch-user-from-address',
+    name: 'fetch-user-by-address',
     text: 'SELECT * FROM users WHERE address = $1',
     values: [from],
   }
   let res = await client.query(query)
+  client.release()
   // console.log(res)
   if(res.rows.length)
     from = `u/${res.rows[0].username}`
