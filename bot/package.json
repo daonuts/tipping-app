@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:rinkeby": ". ./.env-rinkeby && node index.js",
-    "start:mainnet": ". ./.env-mainnet && node index.js"
+    "start:mainnet": ". ./.env-mainnet && forever index.js"
   },
   "author": "Carl Larson <cslarson@gmail.com>",
   "license": "ISC",
