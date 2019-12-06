@@ -81,5 +81,5 @@ async function reply(content, {from, amount, transactionHash}){
   let txUrl = process.env.NETWORK === "rinkeby" ? `https://rinkeby.etherscan.io/tx/${transactionHash}` : `https://etherscan.io/tx/${transactionHash}`
   let message = `${from} [tipped](${txUrl}) you ${BigNumber.from(amount).div(constants.WeiPerEther)} donuts!`
   console.log(content, message)
-  // return await content.reply(message)
+  return await content.reply(message)
 }
