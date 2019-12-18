@@ -68,7 +68,7 @@ async function reply(content, {from, amount, transactionHash}){
   const query = {
     // give the query a unique name
     name: 'fetch-user-by-address',
-    text: 'SELECT * FROM users WHERE address = $1',
+    text: 'SELECT * FROM users WHERE address ILIKE $1',
     values: [from],
   }
   let res = await client.query(query)
