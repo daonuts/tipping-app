@@ -97,9 +97,44 @@ function App() {
   )
 }
 
+// async function submitTip(api, recipient, amount, contentId){
+//   const { utils } = ethers
+//   const { formatBytes32String, parseBytes32String, toUtf8Bytes, hexlify, hexZeroPad, bigNumberify } = utils
+//
+//   const decimals = "1000000000000000000"
+//
+//   let value = bigNumberify(amount).mul(decimals);     //    web3.toBigNumber(amount).mul("1e+18").toFixed()
+//
+//   console.log(contentId, value)
+//
+//   let tokenAddress = await api.call('currency').toPromise()
+//
+//   const torusAddress = await getPublicAddressTorus({verifier:"reddit", verifierId: recipient})
+//
+//   const recipientAddress = hexZeroPad(hexlify(torusAddress),32)
+//   contentId = formatBytes32String(contentId) //hexZeroPad(hexlify(toUtf8Bytes("t3_cmjqva")),32)
+//   // console.log(hexlify(contentId))
+//   const args = "0x" + [
+//     hexlify(1),   // 1 = tip
+//     recipientAddress,
+//     contentId
+//   ].map(a=>a.substr(2)).join("")
+//   console.log(args)
+//
+//   const { appAddress } = await api.currentApp().toPromise()
+//   console.log(appAddress)
+//   const token = api.external(tokenAddress, TokenABI)
+//   console.log(token)
+//
+//   console.log(await api.call("extractTipParameters", args).toPromise())
+//   const tx = await token.send(appAddress, value.toString(), args).toPromise()
+//   console.log(tx)
+//
+// }
+
 async function submitTip(api, recipient, amount, contentId){
   const { utils } = ethers
-  const { formatBytes32String, parseBytes32String, toUtf8Bytes, hexlify, hexZeroPad, bigNumberify } = utils
+  const { hexStripZeros, hexDataSlice, solidityPack, defaultAbiCoder, Interface, formatBytes32String, parseBytes32String, toUtf8Bytes, toUtf8String, hexlify, hexZeroPad, bigNumberify } = utils
 
   const decimals = "1000000000000000000"
 
@@ -111,23 +146,37 @@ async function submitTip(api, recipient, amount, contentId){
 
   const torusAddress = await getPublicAddressTorus({verifier:"reddit", verifierId: recipient})
 
-  const recipientAddress = hexZeroPad(hexlify(torusAddress),32)
-  contentId = formatBytes32String(contentId) //hexZeroPad(hexlify(toUtf8Bytes("t3_cmjqva")),32)
-  // console.log(hexlify(contentId))
-  const args = "0x" + [
-    hexlify(1),   // 1 = tip
-    recipientAddress,
-    contentId
-  ].map(a=>a.substr(2)).join("")
-  console.log(args)
+  // contentId = hexlify(toUtf8Bytes(contentId))//hexZeroPad(hexlify(toUtf8Bytes(contentId)),12)
+  // contentId = hexZeroPad(hexlify(toUtf8Bytes(contentId)),12)
 
-  const { appAddress } = await api.currentApp().toPromise()
-  console.log(appAddress)
+  let iface = new Interface([{
+    "inputs": [
+      {
+        "name": "contentId",
+        "type": "bytes12"
+      }
+    ],
+    "name": "redditTipV1",
+    "type": "function"
+  }])
+  console.log("sighash", iface.functions.redditTipV1.sighash)
+  const encoded = iface.functions.redditTipV1.encode([hexZeroPad(hexlify(toUtf8Bytes(contentId)),12)])
+  console.log(encoded)
+
+  // const args = "0x" + [
+  //   iface.functions.redditTipV1.sighash,
+  //   contentId
+  // ].map(a=>a.substr(2)).join("")
+
+  const resSigHash = hexDataSlice(encoded, 0, 4)
+  console.log(resSigHash, resSigHash === iface.functions.redditTipV1.sighash)
+  const resContentId = defaultAbiCoder.decode(["bytes12"], hexDataSlice(encoded, 4))[0]
+  console.log(resContentId)
+  console.log(toUtf8String(hexStripZeros(resContentId)))
+
   const token = api.external(tokenAddress, TokenABI)
-  console.log(token)
 
-  console.log(await api.call("extractTipParameters", args).toPromise())
-  const tx = await token.send(appAddress, value.toString(), args).toPromise()
+  const tx = await token.send(torusAddress, value.toString(), encoded).toPromise()
   console.log(tx)
 
 }
